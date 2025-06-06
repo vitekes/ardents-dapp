@@ -1,0 +1,11 @@
+{
+  "name": "ardents-cms",
+  "private": true,
+  "scripts": {
+    "start": "directus start",
+    "bootstrap": "directus bootstrap"
+  },
+  "dependencies": {
+    "directus": "latest"
+  }
+}

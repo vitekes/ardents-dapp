@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cms": "npm --prefix cms start",
+    "db:migrate": "psql \"$DATABASE_URL\" -f migrations/001_init.sql",
+    "start:all": "npm run db:migrate && concurrently \"npm run cms\" \"next start\""
   },
   "dependencies": {
     "@shadcn/ui": "^0.0.4",
@@ -16,7 +19,8 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "viem": "^2.30.6",
-    "wagmi": "^2.15.5"
+    "wagmi": "^2.15.5",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -30,6 +34,7 @@
     "eslint-config-next": "15.3.3",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.7",
-    "typescript": "^5"
+    "typescript": "^5",
+    "concurrently": "^9.0.0"
   }
 }
