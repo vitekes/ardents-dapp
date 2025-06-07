@@ -68,13 +68,12 @@ export async function POST(req: NextRequest) {
       userId = user.id;
     }
 
-      const token = await new SignJWT({ sub: userId })
-        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-        .setExpirationTime('1h')
-        .sign(JWT_SECRET);
+    const token = await new SignJWT({ sub: userId })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setExpirationTime('1h')
+      .sign(JWT_SECRET);
 
-      return NextResponse.json({ token }, { status: 200 });
-    }
+    return NextResponse.json({ token }, { status: 200 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 400 });
