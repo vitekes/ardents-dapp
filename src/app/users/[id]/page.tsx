@@ -1,39 +1,28 @@
 import Image from 'next/image';
-import pool from '@/lib/db';
+import prisma from '@/lib/prisma';
 import Placeholder from '@/components/Placeholder';
 
 interface Params { id: string }
 
 async function getUser(id: string) {
-  const client = await pool.connect();
-  try {
-    const res = await client.query(
-      'SELECT display_name, avatar_url, bio, created_at, last_seen FROM site_users WHERE id=$1',
-      [id]
-    );
-    return res.rows[0] as {
-      display_name: string;
-      avatar_url: string | null;
-      bio: string | null;
-      created_at: string;
-      last_seen: string | null;
-    } | undefined;
-  } finally {
-    client.release();
-  }
+  return prisma.siteUser.findUnique({
+    where: { id },
+    select: {
+      display_name: true,
+      avatar_url: true,
+      bio: true,
+      created_at: true,
+      last_seen: true,
+    },
+  });
 }
 
 async function getWallets(id: string) {
-  const client = await pool.connect();
-  try {
-    const res = await client.query(
-      'SELECT caip10_id, label, is_primary FROM wallets WHERE user_id=$1 ORDER BY created_at',
-      [id]
-    );
-    return res.rows as { caip10_id: string; label: string | null; is_primary: boolean }[];
-  } finally {
-    client.release();
-  }
+  return prisma.wallet.findMany({
+    where: { user_id: id },
+    select: { caip10_id: true, label: true, is_primary: true },
+    orderBy: { created_at: 'asc' },
+  });
 }
 
 export default async function Page({ params }: { params: Params }) {
