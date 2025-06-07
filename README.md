@@ -16,6 +16,13 @@ pnpm dev
 bun dev
 ```
 
+Set the `DATABASE_URL` environment variable to the connection string of your
+remote PostgreSQL instance before building or starting the app. For example:
+
+```bash
+export DATABASE_URL="postgresql://user:password@remote-host:5432/dbname"
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

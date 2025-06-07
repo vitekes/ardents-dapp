@@ -74,7 +74,6 @@ export async function POST(req: NextRequest) {
         .sign(JWT_SECRET);
 
       return NextResponse.json({ token }, { status: 200 });
-    }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     return NextResponse.json({ error: message }, { status: 400 });
