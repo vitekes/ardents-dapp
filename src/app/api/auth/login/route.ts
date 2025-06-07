@@ -6,7 +6,8 @@ import bs58 from 'bs58';
 import { SignJWT } from 'jose';
 import pool from '@/lib/db';
 
-export const runtime = 'edge';
+// Для этого обработчика нужен доступ к TCP-сокету Postgres, поэтому используем Node-runtime
+export const runtime = 'nodejs';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'insecure');
 
@@ -34,6 +35,7 @@ async function verifySol(message: string, signature: string, address: string) {
 export async function POST(req: NextRequest) {
   try {
     const { chain, message, signature, address } = await req.json();
+
     let walletAddr: string;
     if (chain.startsWith('eip155')) {
       walletAddr = await verifyEvm(message, signature);
@@ -47,19 +49,32 @@ export async function POST(req: NextRequest) {
 
     const client = await pool.connect();
     try {
-      let res = await client.query('SELECT user_id FROM wallets WHERE caip10_id=$1', [caip10]);
+      let res = await client.query(
+        'SELECT user_id FROM wallets WHERE caip10_id=$1',
+        [caip10],
+      );
+
       let userId: string;
       if (res.rowCount) {
         userId = res.rows[0].user_id;
       } else {
-        res = await client.query('INSERT INTO site_users(display_name) VALUES($1) RETURNING id', [walletAddr.slice(0,6)]);
+        res = await client.query(
+          'INSERT INTO site_users(display_name) VALUES($1) RETURNING id',
+          [walletAddr.slice(0, 6)],
+        );
         userId = res.rows[0].id;
-        await client.query('INSERT INTO wallets(caip10_id, user_id, is_primary) VALUES ($1,$2,true)', [caip10, userId]);
+
+        await client.query(
+          'INSERT INTO wallets(caip10_id, user_id, is_primary) VALUES ($1,$2,true)',
+          [caip10, userId],
+        );
       }
+
       const token = await new SignJWT({ sub: userId })
         .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
         .setExpirationTime('1h')
         .sign(JWT_SECRET);
+
       return NextResponse.json({ token }, { status: 200 });
     } finally {
       client.release();
