@@ -3,12 +3,12 @@ import { SiweMessage } from 'siwe';
 import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 import pool from '@/lib/db';
 
 export const runtime = 'edge';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'insecure';
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'insecure');
 
 function formatCaip10(chain: string, address: string) {
   return `${chain}:${address.toLowerCase()}`;
@@ -56,7 +56,10 @@ export async function POST(req: NextRequest) {
         userId = res.rows[0].id;
         await client.query('INSERT INTO wallets(caip10_id, user_id, is_primary) VALUES ($1,$2,true)', [caip10, userId]);
       }
-      const token = jwt.sign({ sub: userId }, JWT_SECRET, { expiresIn: '1h' });
+      const token = await new SignJWT({ sub: userId })
+        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+        .setExpirationTime('1h')
+        .sign(JWT_SECRET);
       return NextResponse.json({ token }, { status: 200 });
     } finally {
       client.release();
