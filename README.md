@@ -6,6 +6,8 @@ First, run the development server:
 
 ```bash
 npm run dev
+# Generate Prisma client after installing dependencies
+npm run prisma
 # or
 yarn dev
 # or
