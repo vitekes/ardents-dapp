@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Placeholder from "../components/Placeholder";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
             Save and see your changes instantly.
           </li>
         </ol>
+        <Placeholder />
 
         <div className="flex gap-4 items-center flex-col sm:flex-row">
           <a
