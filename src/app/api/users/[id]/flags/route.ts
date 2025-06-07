@@ -4,12 +4,11 @@ import pool from '@/lib/db';
 export const runtime = 'nodejs';
 
 type Params = { id: string };
-type Ctx = { params: Params };
 
 /* GET /api/users/[id]/flags */
 export async function GET(
   _req: Request,
-  { params }: Ctx,            // ← убрали Promise, сразу деструктурируем
+  { params }: { params: Params }, // inline context type
 ) {
   try {
     const client = await pool.connect();
@@ -32,7 +31,7 @@ export async function GET(
 /* POST /api/users/[id]/flags   body: { flag: string } */
 export async function POST(
   req: Request,
-  { params }: Ctx,            // ← то же здесь
+  { params }: { params: Params }, // inline context type
 ) {
   try {
     const { flag } = (await req.json()) as { flag?: string };
