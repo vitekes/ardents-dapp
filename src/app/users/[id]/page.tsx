@@ -55,7 +55,7 @@ export default async function Page({ params }: { params: Params }) {
       <section>
         <h2 className="text-xl font-medium mb-2">Wallets</h2>
         <ul className="space-y-1">
-          {wallets.map((w) => (
+          {wallets.map((w: Awaited<ReturnType<typeof getWallets>>[number]) => (
             <li key={w.caip10_id} className="flex items-center gap-2">
               <span>{w.caip10_id}</span>
               {w.label && <span className="text-gray-500 text-sm">({w.label})</span>}

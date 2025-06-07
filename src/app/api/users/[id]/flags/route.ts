@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-const db: any = prisma;
-
 export const runtime = 'nodejs';
 
 type Params = { id: string };
@@ -13,11 +11,11 @@ export async function GET(
   { params }: { params: Params }, // inline context type
 ) {
   try {
-    const res = await db.userFlag.findMany({
+    const res = await prisma.userFlag.findMany({
       where: { user_id: params.id },
       select: { flag: true },
     });
-    const flags = res.map((r) => r.flag);
+    const flags = res.map((r: { flag: string }) => r.flag);
     return NextResponse.json({ flags });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Неизвестная ошибка';
@@ -36,7 +34,7 @@ export async function POST(
       return NextResponse.json({ error: 'flag required' }, { status: 400 });
     }
 
-    await db.userFlag.upsert({
+    await prisma.userFlag.upsert({
       where: { user_id_flag: { user_id: params.id, flag } },
       create: { user_id: params.id, flag },
       update: {},
