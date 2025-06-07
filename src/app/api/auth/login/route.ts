@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import bs58 from 'bs58';
 import { SignJWT } from 'jose';
-import pool from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 // Для этого обработчика нужен доступ к TCP-сокету Postgres, поэтому используем Node-runtime
 export const runtime = 'nodejs';
@@ -47,28 +47,26 @@ export async function POST(req: NextRequest) {
     }
     const caip10 = formatCaip10(chain, walletAddr);
 
-    const client = await pool.connect();
-    try {
-      let res = await client.query(
-        'SELECT user_id FROM wallets WHERE caip10_id=$1',
-        [caip10],
-      );
+    let userId: string;
+    const wallet = await prisma.wallet.findUnique({
+      where: { caip10_id: caip10 },
+      select: { user_id: true },
+    });
 
-      let userId: string;
-      if (res.rowCount) {
-        userId = res.rows[0].user_id;
-      } else {
-        res = await client.query(
-          'INSERT INTO site_users(display_name) VALUES($1) RETURNING id',
-          [walletAddr.slice(0, 6)],
-        );
-        userId = res.rows[0].id;
-
-        await client.query(
-          'INSERT INTO wallets(caip10_id, user_id, is_primary) VALUES ($1,$2,true)',
-          [caip10, userId],
-        );
-      }
+    if (wallet) {
+      userId = wallet.user_id;
+    } else {
+      const user = await prisma.siteUser.create({
+        data: {
+          display_name: walletAddr.slice(0, 6),
+          wallets: {
+            create: { caip10_id: caip10, is_primary: true },
+          },
+        },
+        select: { id: true },
+      });
+      userId = user.id;
+    }
 
       const token = await new SignJWT({ sub: userId })
         .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
@@ -76,8 +74,6 @@ export async function POST(req: NextRequest) {
         .sign(JWT_SECRET);
 
       return NextResponse.json({ token }, { status: 200 });
-    } finally {
-      client.release();
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
