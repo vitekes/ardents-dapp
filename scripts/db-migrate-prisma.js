@@ -3,6 +3,7 @@ const { spawnSync } = require('child_process');
 const { existsSync, readdirSync } = require('fs');
 const path = require('path');
 
+
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   console.error('DATABASE_URL not set');
