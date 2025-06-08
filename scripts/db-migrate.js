@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const { spawnSync } = require('child_process');
+const { existsSync, readdirSync } = require('fs');
 const path = require('path');
 
 const dbUrl = process.env.DATABASE_URL;
@@ -8,8 +9,13 @@ if (!dbUrl) {
   process.exit(1);
 }
 
-const file = path.join(__dirname, '..', 'migrations', '001_init.sql');
-const result = spawnSync('psql', ['-f', file, dbUrl], { stdio: 'inherit' });
+const migrationsDir = path.join(__dirname, '..', 'prisma', 'migrations');
+if (!existsSync(migrationsDir) || readdirSync(migrationsDir).length === 0) {
+  console.error('No Prisma migrations found. Run "npx prisma migrate dev" to create one or use "npx prisma db push" to sync the schema.');
+  process.exit(1);
+}
+
+const result = spawnSync('npx', ['prisma', 'migrate', 'deploy'], { stdio: 'inherit' });
 if (result.error) {
   console.error(result.error.message);
 }

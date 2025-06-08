@@ -10,7 +10,6 @@
     "prisma": "prisma generate",
     "cms": "npm --prefix cms start",
     "db:migrate": "node ./scripts/db-migrate.js",
-    "db:migrate:prisma": "node ./scripts/db-migrate-prisma.js",
     "start:all": "npm run db:migrate && concurrently \"npm run cms\" \"next start\""
   },
   "dependencies": {

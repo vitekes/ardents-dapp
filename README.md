@@ -20,14 +20,12 @@ bun dev
 
 Create a PostgreSQL database and set `DATABASE_URL` to the connection string. You can copy `.env.example` to `.env` and fill in your credentials.
 
-Run the initial migration with:
+Run the initial migration with Prisma:
 
 ```bash
 npm run db:migrate
-# or use Prisma migrations
-npm run db:migrate:prisma
 ```
-These Node-based scripts work cross-platform, including on Windows.
+This Node-based script works cross-platform, including on Windows.
 
 If you use Prisma, generate migrations with:
 
