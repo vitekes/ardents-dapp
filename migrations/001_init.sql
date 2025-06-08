@@ -21,7 +21,7 @@ CREATE TABLE site_users (
     display_name    varchar(64) UNIQUE NOT NULL,
     avatar_url      text,
     bio             text,
-    primary_wallet  varchar(128) REFERENCES wallets(caip10_id) ON DELETE SET NULL,
+    primary_wallet  varchar(128),
     role            user_role_t NOT NULL DEFAULT 'user',
     is_banned       boolean     NOT NULL DEFAULT false,
     created_at      timestamptz NOT NULL DEFAULT now(),
@@ -40,6 +40,11 @@ CREATE TABLE wallets (
 CREATE INDEX wallets_user_idx       ON wallets(user_id);
 -- Only one primary wallet per user
 CREATE UNIQUE INDEX wallets_primary_uq ON wallets(user_id) WHERE is_primary;
+
+-- Add FK from site_users.primary_wallet to wallets now that both tables exist
+ALTER TABLE site_users
+  ADD CONSTRAINT site_users_primary_wallet_fkey
+  FOREIGN KEY (primary_wallet) REFERENCES wallets(caip10_id) ON DELETE SET NULL;
 
 -- 3. Posts ---------------------------------------------------
 CREATE TABLE posts (
