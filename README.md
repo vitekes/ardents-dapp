@@ -18,7 +18,7 @@ bun dev
 
 ### Database Setup
 
-Create a PostgreSQL database and set `DATABASE_URL` to the connection string. You can copy `.env.example` to `.env` and fill in your credentials.
+Set `DATABASE_URL` to the path of your SQLite database file. You can copy `.env.example` to `.env` and use the default `file:./dev.db` value.
 
 Run the initial migration with Prisma:
 
