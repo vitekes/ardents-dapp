@@ -25,6 +25,7 @@ model SiteUser {
   last_seen     DateTime? @db.Timestamptz
 
   wallets       Wallet[]
+  flags         UserFlag[]
 
   @@map("site_users")
 }

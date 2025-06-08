@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: Params }, // inline context type
 ) {
   try {
-    const res = await prisma.userFlag.findMany({
+    const res = await (prisma as any).userFlag.findMany({
       where: { user_id: params.id },
       select: { flag: true },
     });
@@ -34,7 +34,7 @@ export async function POST(
       return NextResponse.json({ error: 'flag required' }, { status: 400 });
     }
 
-    await prisma.userFlag.upsert({
+    await (prisma as any).userFlag.upsert({
       where: { user_id_flag: { user_id: params.id, flag } },
       create: { user_id: params.id, flag },
       update: {},
