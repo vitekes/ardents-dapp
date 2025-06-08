@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 
@@ -11,17 +11,12 @@ export async function GET(
   { params }: { params: Params }, // inline context type
 ) {
   try {
-    const client = await pool.connect();
-    try {
-      const res = await client.query(
-        'SELECT flag FROM user_flags WHERE user_id = $1',
-        [params.id],
-      );
-      const flags = res.rows.map((r) => r.flag as string);
-      return NextResponse.json({ flags });
-    } finally {
-      client.release();
-    }
+    const res = await (prisma as any).userFlag.findMany({
+      where: { user_id: params.id },
+      select: { flag: true },
+    });
+    const flags = res.map((r: { flag: string }) => r.flag);
+    return NextResponse.json({ flags });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Неизвестная ошибка';
     return NextResponse.json({ error: message }, { status: 400 });
@@ -39,18 +34,13 @@ export async function POST(
       return NextResponse.json({ error: 'flag required' }, { status: 400 });
     }
 
-    const client = await pool.connect();
-    try {
-      await client.query(
-        `INSERT INTO user_flags (user_id, flag)
-         VALUES ($1, $2)
-         ON CONFLICT DO NOTHING`,
-        [params.id, flag],
-      );
-      return NextResponse.json({ ok: true }, { status: 201 });
-    } finally {
-      client.release();
-    }
+    await (prisma as any).userFlag.upsert({
+      where: { user_id_flag: { user_id: params.id, flag } },
+      create: { user_id: params.id, flag },
+      update: {},
+    });
+
+    return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Неизвестная ошибка';
     return NextResponse.json({ error: message }, { status: 400 });

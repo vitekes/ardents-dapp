@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 export async function POST(req: Request, { params }: { params: { id: string } }) {
   const formData = await req.formData();
@@ -8,14 +8,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   if (!caip10) {
     return NextResponse.json({ error: 'caip10 required' }, { status: 400 });
   }
-  const client = await pool.connect();
-  try {
-    await client.query(
-      'INSERT INTO wallets(caip10_id, user_id, label) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING',
-      [caip10.toString(), params.id, label ? label.toString() : null],
-    );
-  } finally {
-    client.release();
-  }
+  await prisma.wallet.upsert({
+    where: { caip10_id: caip10.toString() },
+    update: {},
+    create: {
+      caip10_id: caip10.toString(),
+      user_id: params.id,
+      label: label ? label.toString() : null,
+    },
+  });
+
   return NextResponse.json({ ok: true });
 }
