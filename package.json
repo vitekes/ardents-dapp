@@ -9,11 +9,12 @@
     "lint": "next lint",
     "prisma": "prisma generate",
     "cms": "npm --prefix cms start",
-    "db:migrate": "psql \"$DATABASE_URL\" -f migrations/001_init.sql",
+    "db:migrate": "psql -f migrations/001_init.sql \"$DATABASE_URL\"",
     "start:all": "npm run db:migrate && concurrently \"npm run cms\" \"next start\""
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "@prisma/client": "^6.9.0",
     "@shadcn/ui": "^0.0.4",
     "@solana/web3.js": "^1.95.3",
     "bs58": "^5.0.0",
@@ -23,7 +24,6 @@
     "lucide-react": "^0.513.0",
     "next": "^15.3.3",
     "pg": "^8.11.3",
-    "@prisma/client": "^5.13.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "siwe": "^3.0.0",
@@ -44,7 +44,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "postcss": "^8.5.4",
-    "prisma": "^5.13.0",
+    "prisma": "^6.9.0",
     "tailwindcss": "^4.1.7",
     "typescript": "^5"
   }
