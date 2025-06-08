@@ -25,6 +25,7 @@ Run the initial migration with Prisma:
 ```bash
 npm run db:migrate
 ```
+
 This Node-based script works cross-platform, including on Windows, and it
 automatically loads environment variables from `.env`.
 
