@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prisma": "prisma generate",
     "cms": "npm --prefix cms start",
-    "db:migrate": "psql -f migrations/001_init.sql \"$DATABASE_URL\"",
+    "db:migrate": "node ./scripts/db-migrate.js",
     "start:all": "npm run db:migrate && concurrently \"npm run cms\" \"next start\""
   },
   "dependencies": {
