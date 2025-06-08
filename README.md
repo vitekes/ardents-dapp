@@ -16,6 +16,26 @@ pnpm dev
 bun dev
 ```
 
+### Database Setup
+
+Create a PostgreSQL database and set `DATABASE_URL` to the connection string. You can copy `.env.example` to `.env` and fill in your credentials.
+
+Run the initial migration with Prisma:
+
+```bash
+npm run db:migrate
+```
+This Node-based script works cross-platform, including on Windows, and it
+automatically loads environment variables from `.env`.
+
+If you use Prisma, generate migrations with:
+
+```bash
+npx prisma migrate dev --name init
+```
+For an existing database without migrations, you can use
+`npx prisma db push` or follow Prisma's [baseline guide](https://pris.ly/d/migrate-baseline).
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
