@@ -29,6 +29,14 @@ npm run db:migrate:prisma
 ```
 These Node-based scripts work cross-platform, including on Windows.
 
+If you use Prisma, generate migrations with:
+
+```bash
+npx prisma migrate dev --name init
+```
+For an existing database without migrations, you can use
+`npx prisma db push` or follow Prisma's [baseline guide](https://pris.ly/d/migrate-baseline).
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

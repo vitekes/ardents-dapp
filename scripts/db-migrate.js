@@ -9,7 +9,7 @@ if (!dbUrl) {
 }
 
 const file = path.join(__dirname, '..', 'migrations', '001_init.sql');
-const result = spawnSync('psql', [dbUrl, '-f', file], { stdio: 'inherit' });
+const result = spawnSync('psql', ['-f', file, dbUrl], { stdio: 'inherit' });
 if (result.error) {
   console.error(result.error.message);
 }
