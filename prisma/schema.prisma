@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -14,15 +14,15 @@ enum user_role_t {
 }
 
 model SiteUser {
-  id            String    @id @default(uuid()) @db.Uuid
+  id            String    @id @default(uuid())
   display_name  String    @unique
-  avatar_url    String?   @db.Text
-  bio           String?   @db.Text
-  primary_wallet String?  @db.VarChar(128)
+  avatar_url    String?
+  bio           String?
+  primary_wallet String?
   role          user_role_t @default(user)
   is_banned     Boolean   @default(false)
-  created_at    DateTime  @default(now()) @db.Timestamptz
-  last_seen     DateTime? @db.Timestamptz
+  created_at    DateTime  @default(now())
+  last_seen     DateTime?
 
   wallets       Wallet[]
   flags         UserFlag[]
@@ -31,11 +31,11 @@ model SiteUser {
 }
 
 model Wallet {
-  caip10_id  String   @id @db.VarChar(128)
-  user_id    String   @db.Uuid
-  label      String?  @db.VarChar(32)
+  caip10_id  String   @id
+  user_id    String
+  label      String?
   is_primary Boolean  @default(false)
-  created_at DateTime @default(now()) @db.Timestamptz
+  created_at DateTime @default(now())
 
   user SiteUser @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -44,10 +44,10 @@ model Wallet {
 }
 
 model UserFlag {
-  user_id String  @db.Uuid
-  flag    String  @db.VarChar(32)
-  set_by  String? @db.Uuid
-  set_at  DateTime @default(now()) @db.Timestamptz
+  user_id String
+  flag    String
+  set_by  String?
+  set_at  DateTime @default(now())
 
   user SiteUser @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
